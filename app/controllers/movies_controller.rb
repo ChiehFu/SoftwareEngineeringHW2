@@ -9,11 +9,33 @@ class MoviesController < ApplicationController
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
   end
-
+  
   def index
-    @movies = Movie.all
+    @checked_item = []
+    if request.path == '/movies/sort'
+      @movies = Movie.all.order(:title)
+      @path1 = '/movies'
+      @path2 = '/movies/release'
+    elsif 
+      request.path == '/movies/release'
+      @movies = Movie.all.order(:release_date)
+      @path1 = '/movies/sort'
+      @path2 = '/movies'
+    else
+      hash = params["ratings"];
+      if (hash.nil?)
+        @movies = Movie.all
+      elsif
+        array = hash.keys
+        @movies = Movie.where(rating: array)
+        @checked_item = array
+      end
+      @path1 = '/movies/sort'
+      @path2 = '/movies/release'
+    end
+    @all_ratings = Movie.distinct.pluck(:rating)
   end
-
+  
   def new
     # default: render 'new' template
   end
