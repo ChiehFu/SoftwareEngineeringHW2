@@ -16,7 +16,7 @@ Rails.application.routes.draw do
 
   resources :movies do
     collection do
-      get 'sort', to:'movies#index'
+      get 'title', to:'movies#index'
       get 'release', to:'movies#index'
     end
   end

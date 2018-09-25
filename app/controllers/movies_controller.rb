@@ -12,14 +12,14 @@ class MoviesController < ApplicationController
   
   def index
     @checked_item = []
-    if request.path == '/movies/sort'
+    if request.path == '/movies/title'
       @movies = Movie.all.order(:title)
       @path1 = '/movies'
       @path2 = '/movies/release'
     elsif 
       request.path == '/movies/release'
       @movies = Movie.all.order(:release_date)
-      @path1 = '/movies/sort'
+      @path1 = '/movies/title'
       @path2 = '/movies'
     else
       hash = params["ratings"];
@@ -30,7 +30,7 @@ class MoviesController < ApplicationController
         @movies = Movie.where(rating: array)
         @checked_item = array
       end
-      @path1 = '/movies/sort'
+      @path1 = '/movies/title'
       @path2 = '/movies/release'
     end
     @all_ratings = Movie.distinct.pluck(:rating)
