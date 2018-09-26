@@ -9,9 +9,9 @@
 %table#movies
   %thead
     %tr
-      %th{class: @path1 == '/movies'? 'hilite' : ''}= link_to "Movie Title", @path1, :id => "title_header"
+      %th{class: @method.include?(:title)? 'hilite' : ''}= link_to "Movie Title", @path1, :id => "title_header"
       %th Rating
-      %th{class: @path2 == '/movies'? 'hilite' : ''}= link_to "Release Date", @path2, :id => "release_date_header"
+      %th{class: @method.include?(:release_date)? 'hilite' : ''}= link_to "Release Date", @path2, :id => "release_date_header"
       %th More Info
   %tbody
     - @movies.each do |movie|

@@ -11,29 +11,62 @@ class MoviesController < ApplicationController
   end
   
   def index
-    @checked_item = []
-    if request.path == '/movies/title'
-      @movies = Movie.all.order(:title)
-      @path1 = '/movies'
-      @path2 = '/movies/release'
-    elsif 
-      request.path == '/movies/release'
-      @movies = Movie.all.order(:release_date)
-      @path1 = '/movies/title'
-      @path2 = '/movies'
-    else
-      hash = params["ratings"];
-      if (hash.nil?)
-        @movies = Movie.all
-      elsif
-        array = hash.keys
-        @movies = Movie.where(rating: array)
-        @checked_item = array
-      end
-      @path1 = '/movies/title'
-      @path2 = '/movies/release'
-    end
     @all_ratings = Movie.distinct.pluck(:rating)
+    @sort_method = [:title, :release_date]
+    
+    if session[:second].nil?
+      session[:second] = true
+      #initialize session
+      @sort_method.each do |m|
+        session[m.to_sym] = false
+      end
+      
+      @all_ratings.each do |rank|
+        session[rank.to_sym] = true
+      end
+    end
+    
+    #get params and update session
+    hash = params["ratings"]
+    if (!hash.nil?) 
+      array = hash.keys
+      @all_ratings.each do |rank|
+        if (array.include?(rank))
+          session[rank.to_sym] = true
+        else
+          session[rank.to_sym] = false
+        end
+      end
+    end
+    
+    #update session for sorting methods
+    if request.path == '/movies/title'
+      session[:title] = !(session[:title])
+      session[:release_date] = false
+    elsif request.path == '/movies/release'
+      session[:title] = false
+      session[:release_date] = !session[:release_date]
+    end
+    
+    #get checked item from session
+    @checked_item = []
+    @all_ratings.each do |rank|
+      if session[rank.to_sym] == true
+        @checked_item.push(rank)
+      end
+    end
+    
+    #get sorting method from session
+    @method = []
+    @sort_method.each do |m|
+      if session[m.to_sym] == true
+        @method.push(m)
+      end
+    end
+    
+    @movies = Movie.where(rating: @checked_item).order(@method)
+    @path1 = '/movies/title'
+    @path2 = '/movies/release'
   end
   
   def new
